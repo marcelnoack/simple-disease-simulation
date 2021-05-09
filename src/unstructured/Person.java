@@ -1,4 +1,4 @@
-package sample;
+package unstructured;
 
 public class Person {
     private Status status;

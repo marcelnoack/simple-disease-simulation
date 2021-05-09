@@ -1,11 +1,8 @@
-package sample;
+package unstructured;
 
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Circle;
 
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
     private int cellSize;
@@ -29,7 +26,7 @@ public class Board {
     public Pane generate(int[][] field, int startX, int endX, int startY, int endY) {
         Pane boardPane = new Pane();
         int xUI = 0;
-        int yUI = 0;
+        int yUI;
 
         for (int x = startX * cellSize; x < endX * cellSize; x += cellSize) {
             if (x != startX * cellSize) xUI += cellSize;

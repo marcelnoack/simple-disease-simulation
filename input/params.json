@@ -1,0 +1,10 @@
+{
+  "rows": 100,
+  "columns": 100,
+  "sCount": 6000,
+  "iCount": 1,
+  "rCount": 0,
+  "beta": 0.33,
+  "rTime": 100,
+  "iTime": 30
+}

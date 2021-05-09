@@ -1,4 +1,4 @@
-package sample;
+package unstructured;
 
 public enum Status {
     SUSCEPTIBLE, INFECTIOUS, RECOVERED

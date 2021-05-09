@@ -1,27 +1,26 @@
-.root {
-    -fx-fill: white;
-}
-
 .empty-cell {
-    -fx-background-color: white;
+    -fx-background-color: black;
     /*-fx-border-color: black;*/
     /*-fx-border-width: 0.1;*/
 }
 
 .susceptible-cell {
-    -fx-background-color: #70AD47;
+    -fx-background-color: white;
+    /*-fx-background-color: #70AD47;*/
     /*-fx-border-color: black;*/
     /*-fx-border-width: 0.1;*/
 }
 
 .infectious-cell {
-    -fx-background-color: #ED7D31;
+    -fx-background-color: red;
+    /*-fx-background-color: #ED7D31;*/
     /*-fx-border-color: black;*/
     /*-fx-border-width: 0.1;*/
 }
 
 .recovered-cell {
-    -fx-background-color: #5B9BD5;
+    -fx-background-color: blue;
+    /*-fx-background-color: #5B9BD5;*/
     /*-fx-border-color: black;*/
     /*-fx-border-width: 0.1;*/
 }
