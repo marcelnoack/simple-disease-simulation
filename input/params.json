@@ -1,10 +1,17 @@
 {
-  "rows": 100,
-  "columns": 100,
-  "sCount": 6000,
-  "iCount": 1,
-  "rCount": 0,
+  "totalWidth": 500,
+  "totalHeight": 500,
+  "x0": 0,
+  "x1": 500,
+  "y0": 0,
+  "y1":500,
+  "S": 80000,
+  "I": 5,
+  "R": 0,
   "beta": 0.33,
-  "rTime": 100,
-  "iTime": 30
+  "durations": "FIXED",
+  "immunityDuration": 100,
+  "infectionDuration": 30,
+  "maxSteps": 0,
+  "initialDistribution": []
 }

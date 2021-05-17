@@ -1,4 +1,4 @@
-package unstructured;
+package main.unstructured;
 
 import javafx.scene.layout.Pane;
 
@@ -7,7 +7,7 @@ import java.util.Map;
 public class Board {
     private int cellSize;
 
-    Board(int cellSize) {
+    public Board(int cellSize) {
         this.cellSize = cellSize;
     }
 

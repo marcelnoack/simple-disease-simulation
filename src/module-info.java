@@ -3,5 +3,6 @@ module PVR.Krankheitsausbreitung {
     requires javafx.controls;
     requires org.json;
 
-    opens unstructured;
+    opens main;
+    opens main.unstructured;
 }

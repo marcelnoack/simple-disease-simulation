@@ -1,4 +1,4 @@
-package unstructured;
+package main.unstructured;
 
 public class Person {
     private Status status;

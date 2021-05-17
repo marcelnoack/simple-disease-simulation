@@ -1,4 +1,4 @@
-package unstructured;
+package main.unstructured;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -20,34 +20,32 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.json.JSONObject;
+import main.unstructured.Board;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-
 
 public class Main extends Application {
 
     // Temporary start params --> will be read dynamically later on
     private static final int THREAD_COUNT = 4;
-    private static final int ROWS = 1000;
-    private static final int COLUMNS = 1000;
+    private static final int ROWS = 400;
+    private static final int COLUMNS = 400;
     int[][] field = new int[COLUMNS][ROWS];
     int[][] rField = new int[COLUMNS][ROWS];
-    private static int S_COUNT = 700000;
+    private static int S_COUNT = 80000;
     private static int I_COUNT = 1;
     private static int R_COUNT = 0;
     private static final double BETA = 0.33;
     private static final int R_TIME = 30;
     private static final int I_TIME = 100;
 
-    //  # UI Params
+    // # UI Params
     private static final int UI_ROWS_START = 0;
     private static final int UI_COLUMNS_START = 0;
-    private static final int UI_ROWS_END = 300;
-    private static final int UI_COLUMNS_END = 300;
+    private static final int UI_ROWS_END = 400;
+    private static final int UI_COLUMNS_END = 400;
     private static final int CELL_SIZE = 4;
     private static ImageView iv = new ImageView();
     private static WritableImage img = new WritableImage(UI_ROWS_END, UI_COLUMNS_END);
@@ -64,10 +62,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Initialize base layout
         label = new Label(
-                "Step: 0, N = " + COLUMNS * ROWS
-                        + ", S: " + S_COUNT
-                        + ", I: " + I_COUNT
-                        + " , R: " + R_COUNT);
+                "Step: 0, N = " + COLUMNS * ROWS + ", S: " + S_COUNT + ", I: " + I_COUNT + " , R: " + R_COUNT);
         label.setPrefHeight(20);
         rootPane.setTop(label);
         HBox hBox = new HBox();
@@ -80,9 +75,9 @@ public class Main extends Application {
         rootPane.setBottom(hBox);
         hBox.setPrefHeight(40);
         hBox.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(rootPane, (UI_COLUMNS_END - UI_COLUMNS_START) * CELL_SIZE, (UI_ROWS_END - UI_ROWS_START) * CELL_SIZE + label.getPrefHeight() + hBox.getPrefHeight());
+        Scene scene = new Scene(rootPane, (UI_COLUMNS_END - UI_COLUMNS_START) * CELL_SIZE,
+                (UI_ROWS_END - UI_ROWS_START) * CELL_SIZE + label.getPrefHeight() + hBox.getPrefHeight());
         scene.getStylesheets().add("index.css");
-
 
         // Initialize field with empty cells
         initField();
@@ -93,27 +88,32 @@ public class Main extends Application {
 
         for (int x = 0; x < UI_COLUMNS_END; x++) {
             for (int y = 0; y < UI_ROWS_END; y++) {
-                if (field[x][y] == 0) pW.setColor(x, y, Color.BLACK);
-                if (field[x][y] == 1) pW.setColor(x, y, Color.WHITE);
-                if (field[x][y] == 2) pW.setColor(x, y, Color.RED);
-                if (field[x][y] == 3) pW.setColor(x, y, Color.BLUE);
+                if (field[x][y] == 0)
+                    pW.setColor(x, y, Color.BLACK);
+                if (field[x][y] == 1)
+                    pW.setColor(x, y, Color.WHITE);
+                if (field[x][y] == 2)
+                    pW.setColor(x, y, Color.RED);
+                if (field[x][y] == 3)
+                    pW.setColor(x, y, Color.BLUE);
             }
         }
 
         iv.setImage(img);
         rootPane.setCenter(iv);
 
-//        boardPane = board.generate(field, UI_COLUMNS_START, UI_COLUMNS_END, UI_ROWS_START, UI_ROWS_END);
-//        rootPane.setCenter(boardPane);
-//        int temp = 0;
-//        long t1 = System.nanoTime();
-//        while(temp < 100) {
-//            calc_step();
-//            calc_recovery();
-//            calc_infection();
-//            temp++;
-//        }
-//        System.out.println((System.nanoTime() - t1) / 1000);
+        // boardPane = board.generate(field, UI_COLUMNS_START, UI_COLUMNS_END,
+        // UI_ROWS_START, UI_ROWS_END);
+        // rootPane.setCenter(boardPane);
+        // int temp = 0;
+        // long t1 = System.nanoTime();
+        // while(temp < 100) {
+        // calc_step();
+        // calc_recovery();
+        // calc_infection();
+        // temp++;
+        // }
+        // System.out.println((System.nanoTime() - t1) / 1000);
         final Timeline timeline = new Timeline(new KeyFrame(Duration.ZERO, new EventHandler() {
             @Override
             public void handle(Event actionEvent) {
@@ -124,9 +124,10 @@ public class Main extends Application {
                 calc_img();
                 updateLabel(step);
                 step++;
-//              board.update(boardPane, field, fieldMap, UI_COLUMNS_START, UI_COLUMNS_END, UI_ROWS_START, UI_ROWS_END);
+                // board.update(boardPane, field, fieldMap, UI_COLUMNS_START, UI_COLUMNS_END,
+                // UI_ROWS_START, UI_ROWS_END);
             }
-        }), new KeyFrame(Duration.millis(50)));
+        }), new KeyFrame(Duration.millis(33)));
         timeline.setCycleCount(Timeline.INDEFINITE);
 
         bStart.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -154,7 +155,7 @@ public class Main extends Application {
         // set scene and start the program
         primaryStage.setTitle("PVR Krankheitsausbreitung");
         primaryStage.setScene(scene);
-//        primaryStage.setResizable(false);
+        // primaryStage.setResizable(false);
         primaryStage.show();
     }
 
@@ -251,48 +252,48 @@ public class Main extends Application {
             }
         }
 
-//        int t;
-//        int x2 = 0;
-//        int y2 = 0;
-//
-//        for (int x = 0; x < COLUMNS; x++) {
-//            for (int y = 0; y < ROWS; y++) {
-//                if (field[x][y] > 0) {
-//                    t = ThreadLocalRandom.current().nextInt(8);
-//
-//                    if (t == 0) {
-//                        x2 = xPos(x - 1);
-//                        y2 = yPos(y - 1);
-//                    } else if (t == 1) {
-//                        x2 = x;
-//                        y2 = yPos(y - 1);
-//                    } else if (t == 2) {
-//                        x2 = xPos(x + 1);
-//                        y2 = yPos(y - 1);
-//                    } else if (t == 3) {
-//                        x2 = xPos(x + 1);
-//                        y2 = y;
-//                    } else if (t == 4) {
-//                        x2 = xPos(x + 1);
-//                        y2 = yPos(y + 1);
-//                    } else if (t == 5) {
-//                        x2 = x;
-//                        y2 = yPos(y + 1);
-//                    } else if (t == 6) {
-//                        x2 = xPos(x - 1);
-//                        y2 = yPos(y + 1);
-//                    } else if (t == 7) {
-//                        x2 = xPos(x - 1);
-//                        y2 = y;
-//                    }
-//
-//                    if (field[x2][y2] == 0) {
-//                        // frei?
-//                        move(x, y, x2, y2);
-//                    }
-//                }
-//            }
-//        }
+        // int t;
+        // int x2 = 0;
+        // int y2 = 0;
+        //
+        // for (int x = 0; x < COLUMNS; x++) {
+        // for (int y = 0; y < ROWS; y++) {
+        // if (field[x][y] > 0) {
+        // t = ThreadLocalRandom.current().nextInt(8);
+        //
+        // if (t == 0) {
+        // x2 = xPos(x - 1);
+        // y2 = yPos(y - 1);
+        // } else if (t == 1) {
+        // x2 = x;
+        // y2 = yPos(y - 1);
+        // } else if (t == 2) {
+        // x2 = xPos(x + 1);
+        // y2 = yPos(y - 1);
+        // } else if (t == 3) {
+        // x2 = xPos(x + 1);
+        // y2 = y;
+        // } else if (t == 4) {
+        // x2 = xPos(x + 1);
+        // y2 = yPos(y + 1);
+        // } else if (t == 5) {
+        // x2 = x;
+        // y2 = yPos(y + 1);
+        // } else if (t == 6) {
+        // x2 = xPos(x - 1);
+        // y2 = yPos(y + 1);
+        // } else if (t == 7) {
+        // x2 = xPos(x - 1);
+        // y2 = y;
+        // }
+        //
+        // if (field[x2][y2] == 0) {
+        // // frei?
+        // move(x, y, x2, y2);
+        // }
+        // }
+        // }
+        // }
     }
 
     private void calc_infection() {
@@ -354,43 +355,43 @@ public class Main extends Application {
             }
         }
 
-//        for (int x = 0; x < COLUMNS; x++) {
-//            for (int y = 0; y < ROWS; y++) {
-//                if (field[x][y] == 1) {
-//
-//                    boolean getIll = false;
-//                    if (field[xPos(x - 1)][yPos(y - 1)] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[x][yPos(y - 1)] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[xPos(x + 1)][yPos(y - 1)] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[xPos(x + 1)][y] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[xPos(x + 1)][yPos(y + 1)] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[x][yPos(y + 1)] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[xPos(x - 1)][yPos(y + 1)] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//                    if (field[xPos(x - 1)][y] == 2 && Math.random() < BETA) {
-//                        getIll = true;
-//                    }
-//
-//                    if (getIll == true) {
-//                        field[x][y] = 2;
-//                        rField[x][y] = R_TIME;
-//                    }
-//                }
-//            }
-//        }
+        // for (int x = 0; x < COLUMNS; x++) {
+        // for (int y = 0; y < ROWS; y++) {
+        // if (field[x][y] == 1) {
+        //
+        // boolean getIll = false;
+        // if (field[xPos(x - 1)][yPos(y - 1)] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[x][yPos(y - 1)] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[xPos(x + 1)][yPos(y - 1)] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[xPos(x + 1)][y] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[xPos(x + 1)][yPos(y + 1)] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[x][yPos(y + 1)] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[xPos(x - 1)][yPos(y + 1)] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        // if (field[xPos(x - 1)][y] == 2 && Math.random() < BETA) {
+        // getIll = true;
+        // }
+        //
+        // if (getIll == true) {
+        // field[x][y] = 2;
+        // rField[x][y] = R_TIME;
+        // }
+        // }
+        // }
+        // }
     }
 
     private void calc_recovery() {
@@ -432,75 +433,84 @@ public class Main extends Application {
             }
         }
 
-//        for (var x = 0; x < COLUMNS; x++) {
-//            for (var y = 0; y < ROWS; y++) {
-//                if (field[x][y] == 2) {
-//                    rField[x][y] = rField[x][y] - 1;
-//                    if (rField[x][y] <= 0) {
-//                        field[x][y] = 3;
-//                        rField[x][y] = I_TIME;
-//                    }
-//                } else if (field[x][y] == 3) {
-//                    rField[x][y] = rField[x][y] - 1;
-//                    if (rField[x][y] <= 0) {
-//                        field[x][y] = 1;
-//                        rField[x][y] = 0;
-//                    }
-//                }
-//            }
-//        }
+        // for (var x = 0; x < COLUMNS; x++) {
+        // for (var y = 0; y < ROWS; y++) {
+        // if (field[x][y] == 2) {
+        // rField[x][y] = rField[x][y] - 1;
+        // if (rField[x][y] <= 0) {
+        // field[x][y] = 3;
+        // rField[x][y] = I_TIME;
+        // }
+        // } else if (field[x][y] == 3) {
+        // rField[x][y] = rField[x][y] - 1;
+        // if (rField[x][y] <= 0) {
+        // field[x][y] = 1;
+        // rField[x][y] = 0;
+        // }
+        // }
+        // }
+        // }
     }
 
     private void calc_img() {
-//        Thread[] threads = new Thread[4];
-//        for (int i = 0; i < threads.length; i++) {
-//            int temp = i;
-//            threads[i] = new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    for (int x = ((COLUMNS / threads.length) * temp); x < ((COLUMNS / threads.length) * (temp + 1)); x++) {
-//                        for (int y = 0; y < ROWS; y++) {
-//                            if (field[x][y] == 0) pW.setColor(x, y, Color.BLACK);
-//                            if (field[x][y] == 1) pW.setColor(x, y, Color.WHITE);
-//                            if (field[x][y] == 2) pW.setColor(x, y, Color.RED);
-//                            if (field[x][y] == 3) pW.setColor(x, y, Color.BLUE);
-//                        }
-//                    }
-//                }
-//            });
-//
-//            threads[i].start();
-//        }
-//
-//        for (int i = 0; i < threads.length; i++) {
-//            try {
-//                threads[i].join();
-//            } catch (InterruptedException e) {
-//
-//            }
-//        }
+        // Thread[] threads = new Thread[4];
+        // for (int i = 0; i < threads.length; i++) {
+        // int temp = i;
+        // threads[i] = new Thread(new Runnable() {
+        // @Override
+        // public void run() {
+        // for (int x = ((COLUMNS / threads.length) * temp); x < ((COLUMNS /
+        // threads.length) * (temp + 1)); x++) {
+        // for (int y = 0; y < ROWS; y++) {
+        // if (field[x][y] == 0) pW.setColor(x, y, Color.BLACK);
+        // if (field[x][y] == 1) pW.setColor(x, y, Color.WHITE);
+        // if (field[x][y] == 2) pW.setColor(x, y, Color.RED);
+        // if (field[x][y] == 3) pW.setColor(x, y, Color.BLUE);
+        // }
+        // }
+        // }
+        // });
+        //
+        // threads[i].start();
+        // }
+        //
+        // for (int i = 0; i < threads.length; i++) {
+        // try {
+        // threads[i].join();
+        // } catch (InterruptedException e) {
+        //
+        // }
+        // }
 
         for (int x = 0; x < UI_COLUMNS_END; x++) {
             for (int y = 0; y < UI_ROWS_END; y++) {
-                if (field[x][y] == 0) pW.setColor(x, y, Color.BLACK);
-                if (field[x][y] == 1) pW.setColor(x, y, Color.WHITE);
-                if (field[x][y] == 2) pW.setColor(x, y, Color.RED);
-                if (field[x][y] == 3) pW.setColor(x, y, Color.BLUE);
+                if (field[x][y] == 0)
+                    pW.setColor(x, y, Color.BLACK);
+                if (field[x][y] == 1)
+                    pW.setColor(x, y, Color.WHITE);
+                if (field[x][y] == 2)
+                    pW.setColor(x, y, Color.RED);
+                if (field[x][y] == 3)
+                    pW.setColor(x, y, Color.BLUE);
             }
         }
     }
 
     private int xPos(int x) {
         int x2 = x;
-        if (x2 == -1) x2 = COLUMNS - 1;
-        if (x2 == COLUMNS) x2 = 0;
+        if (x2 == -1)
+            x2 = COLUMNS - 1;
+        if (x2 == COLUMNS)
+            x2 = 0;
         return x2;
     }
 
     private int yPos(int y) {
         int y2 = y;
-        if (y2 == -1) y2 = ROWS - 1;
-        if (y2 == ROWS) y2 = 0;
+        if (y2 == -1)
+            y2 = ROWS - 1;
+        if (y2 == ROWS)
+            y2 = 0;
         return y2;
     }
 
@@ -510,15 +520,16 @@ public class Main extends Application {
         R_COUNT = 0;
         for (int x = 0; x < COLUMNS; x++) {
             for (int y = 0; y < ROWS; y++) {
-                if (field[x][y] == 1) S_COUNT++;
-                if (field[x][y] == 2) I_COUNT++;
-                if (field[x][y] == 3) R_COUNT++;
+                if (field[x][y] == 1)
+                    S_COUNT++;
+                if (field[x][y] == 2)
+                    I_COUNT++;
+                if (field[x][y] == 3)
+                    R_COUNT++;
             }
         }
-        label.setText("Step: " + step + ", N = " + COLUMNS * ROWS
-                + ", S: " + S_COUNT
-                + ", I: " + I_COUNT
-                + ", R: " + R_COUNT);
+        label.setText("Step: " + step + ", N = " + COLUMNS * ROWS + ", S: " + S_COUNT + ", I: " + I_COUNT + ", R: "
+                + R_COUNT);
     }
 
     private void resetData() {
@@ -530,32 +541,9 @@ public class Main extends Application {
         initField();
         randPerm(S_COUNT, 1);
         randPerm(I_COUNT, 2);
-        label.setText("Step: 0, N = " + COLUMNS * ROWS
-                + ", S: " + S_COUNT
-                + ", I: " + I_COUNT
-                + " , R: " + R_COUNT);
+        label.setText("Step: 0, N = " + COLUMNS * ROWS + ", S: " + S_COUNT + ", I: " + I_COUNT + " , R: " + R_COUNT);
         boardPane = board.generate(field, UI_COLUMNS_START, UI_COLUMNS_END, UI_ROWS_START, UI_ROWS_END);
         rootPane.setCenter(boardPane);
-    }
-
-    private void readParams() throws IOException {
-        try {
-            // Parse params
-            File file = new File("params.json");
-            BufferedReader br = new BufferedReader(new FileReader(file));
-
-            String temp;
-            String jsonString = "";
-            while ((temp = br.readLine()) != null) {
-                jsonString += temp;
-            }
-
-            JSONObject jsonObject = new JSONObject(jsonString);
-
-            System.out.println(jsonObject.get("sCount"));
-        } catch (IOException e) {
-            throw e;
-        }
     }
 
     public static void main(String[] args) {
