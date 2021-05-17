@@ -106,9 +106,10 @@ public class MainView implements IView {
     public void updateLabel(int step, int sCount, int iCount, int rCount) {
         double nonEmptyCellCount = sCount + iCount + rCount;
         String newText = "Step: " + step
-                + " S: " + DECIMAL_FORMAT.format((sCount / nonEmptyCellCount) * 100) + "%"
-                + " I: " + DECIMAL_FORMAT.format((iCount / nonEmptyCellCount) * 100) + "%"
-                + " R: " + DECIMAL_FORMAT.format((rCount / nonEmptyCellCount) * 100) + "%";
+                + " | N = " + (int) nonEmptyCellCount
+                + " | S: " + DECIMAL_FORMAT.format((sCount / nonEmptyCellCount) * 100) + "%"
+                + " | I: " + DECIMAL_FORMAT.format((iCount / nonEmptyCellCount) * 100) + "%"
+                + " | R: " + DECIMAL_FORMAT.format((rCount / nonEmptyCellCount) * 100) + "%";
         this.label.setText(newText);
     }
 
