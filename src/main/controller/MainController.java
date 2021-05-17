@@ -37,7 +37,7 @@ public class MainController implements IController {
                 mainView.updateImage(model.getCurrentField());
                 mainView.updateLabel(model.getCurrentStep(), model.getCurrentSusceptibleCount(), model.getCurrentInfectedCount(), model.getCurrentRecoveredCount());
             }
-        }), new KeyFrame(Duration.millis(50)));
+        }), new KeyFrame(Duration.millis(25)));
         if (configuration.getMaxSteps() > 0) {
             timeline.setCycleCount(configuration.getMaxSteps());
         } else {

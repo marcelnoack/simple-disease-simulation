@@ -32,7 +32,7 @@ public class EpidemicState {
         for (int x = 0; x < rows; x++) {
             for (int y = 0; y < columns; y++) {
                 this.field[x][y] = CellStatus.EMPTY;
-                this.rField[x][y] = configuration.getImmunityDuration();
+                this.rField[x][y] = 0;
             }
         }
 
@@ -53,6 +53,8 @@ public class EpidemicState {
             int x = ThreadLocalRandom.current().nextInt(configuration.getTotalWidth());
             int y = ThreadLocalRandom.current().nextInt(configuration.getTotalHeight());
             field[x][y] = cellStatus;
+            if(cellStatus == CellStatus.INFECTED) rField[x][y] = configuration.getInfectionDuration();
+            if(cellStatus == CellStatus.RECOVERED) rField[x][y] = configuration.getImmunityDuration();
         }
     }
 
@@ -146,13 +148,13 @@ public class EpidemicState {
     }
 
     private void calcRecovery() {
-        for (var x = 0; x < configuration.getTotalHeight(); x++) {
-            for (var y = 0; y < configuration.getTotalWidth(); y++) {
+        for (int x = 0; x < configuration.getTotalHeight(); x++) {
+            for (int y = 0; y < configuration.getTotalWidth(); y++) {
                 if (field[x][y] == CellStatus.INFECTED) {
                     rField[x][y] = rField[x][y] - 1;
                     if (rField[x][y] <= 0) {
                         field[x][y] = CellStatus.RECOVERED;
-                        rField[x][y] = configuration.getInfectionDuration();
+                        rField[x][y] = configuration.getImmunityDuration();
                     }
                 } else if (field[x][y] == CellStatus.RECOVERED) {
                     rField[x][y] = rField[x][y] - 1;
