@@ -20,7 +20,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import main.unstructured.Board;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +76,7 @@ public class Main extends Application {
         hBox.setAlignment(Pos.CENTER);
         Scene scene = new Scene(rootPane, (UI_COLUMNS_END - UI_COLUMNS_START) * CELL_SIZE,
                 (UI_ROWS_END - UI_ROWS_START) * CELL_SIZE + label.getPrefHeight() + hBox.getPrefHeight());
-        scene.getStylesheets().add("index.css");
+        scene.getStylesheets().add("main/unstructured/index.css");
 
         // Initialize field with empty cells
         initField();
