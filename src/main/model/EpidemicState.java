@@ -29,10 +29,10 @@ public class EpidemicState {
 
         this.field = new CellStatus[rows][columns];
         this.rField = new int[rows][columns];
-        for (int x = 0; x < rows; x++) {
-            for (int y = 0; y < columns; y++) {
-                this.field[x][y] = CellStatus.EMPTY;
-                this.rField[x][y] = 0;
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                this.field[y][x] = CellStatus.EMPTY;
+                this.rField[y][x] = 0;
             }
         }
 
@@ -40,7 +40,9 @@ public class EpidemicState {
 
         if (configuration.getInitialDistribution().size() > 0) {
             for (Cell c : configuration.getInitialDistribution()) {
-                this.field[c.getX()][c.getY()] = c.getStatus();
+                this.field[c.getY()][c.getX()] = c.getStatus();
+                if(c.getStatus() == CellStatus.INFECTED) rField[c.getY()][c.getX()] = configuration.getInfectionDuration();
+                if(c.getStatus() == CellStatus.RECOVERED) rField[c.getY()][c.getX()] = configuration.getImmunityDuration();
             }
         } else {
             randPerm(configuration.getI(), CellStatus.INFECTED);
@@ -52,9 +54,9 @@ public class EpidemicState {
         for (int c = 0; c < count; c++) {
             int x = ThreadLocalRandom.current().nextInt(configuration.getTotalWidth());
             int y = ThreadLocalRandom.current().nextInt(configuration.getTotalHeight());
-            field[x][y] = cellStatus;
-            if(cellStatus == CellStatus.INFECTED) rField[x][y] = configuration.getInfectionDuration();
-            if(cellStatus == CellStatus.RECOVERED) rField[x][y] = configuration.getImmunityDuration();
+            field[y][x] = cellStatus;
+            if(cellStatus == CellStatus.INFECTED) rField[y][x] = configuration.getInfectionDuration();
+            if(cellStatus == CellStatus.RECOVERED) rField[y][x] = configuration.getImmunityDuration();
         }
     }
 
@@ -93,13 +95,13 @@ public class EpidemicState {
     }
 
     private void move(int x1, int y1, int x2, int y2) {
-        CellStatus cellStatus = field[x1][y1];
-        field[x1][y1] = field[x2][y2];
-        field[x2][y2] = cellStatus;
+        CellStatus cellStatus = field[y1][x1];
+        field[y1][x1] = field[y2][x2];
+        field[y2][x2] = cellStatus;
 
-        int h = rField[x1][y1];
-        rField[x1][y1] = rField[x2][y2];
-        rField[x2][y2] = h;
+        int h = rField[y1][x1];
+        rField[y1][x1] = rField[y2][x2];
+        rField[y2][x2] = h;
     }
 
     private void calcStep() {
@@ -107,9 +109,9 @@ public class EpidemicState {
         int x2 = 0;
         int y2 = 0;
 
-        for (int x = 0; x < configuration.getTotalHeight(); x++) {
-            for (int y = 0; y < configuration.getTotalWidth(); y++) {
-                if (field[x][y] != CellStatus.EMPTY) {
+        for (int x = 0; x < configuration.getTotalWidth(); x++) {
+            for (int y = 0; y < configuration.getTotalHeight(); y++) {
+                if (field[y][x] != CellStatus.EMPTY) {
                     t = ThreadLocalRandom.current().nextInt(8);
 
                     if (t == 0) {
@@ -138,7 +140,7 @@ public class EpidemicState {
                         y2 = y;
                     }
 
-                    if (field[x2][y2] == CellStatus.EMPTY) {
+                    if (field[y2][x2] == CellStatus.EMPTY) {
                         // frei?
                         move(x, y, x2, y2);
                     }
@@ -148,19 +150,19 @@ public class EpidemicState {
     }
 
     private void calcRecovery() {
-        for (int x = 0; x < configuration.getTotalHeight(); x++) {
-            for (int y = 0; y < configuration.getTotalWidth(); y++) {
-                if (field[x][y] == CellStatus.INFECTED) {
-                    rField[x][y] = rField[x][y] - 1;
-                    if (rField[x][y] <= 0) {
-                        field[x][y] = CellStatus.RECOVERED;
-                        rField[x][y] = configuration.getImmunityDuration();
+        for (int x = 0; x < configuration.getTotalWidth(); x++) {
+            for (int y = 0; y < configuration.getTotalHeight(); y++) {
+                if (field[y][x] == CellStatus.INFECTED) {
+                    rField[y][x] = rField[y][x] - 1;
+                    if (rField[y][x] <= 0) {
+                        field[y][x] = CellStatus.RECOVERED;
+                        rField[y][x] = configuration.getImmunityDuration();
                     }
-                } else if (field[x][y] == CellStatus.RECOVERED) {
-                    rField[x][y] = rField[x][y] - 1;
-                    if (rField[x][y] <= 0) {
-                        field[x][y] = CellStatus.SUSCEPTIBLE;
-                        rField[x][y] = 0;
+                } else if (field[y][x] == CellStatus.RECOVERED) {
+                    rField[y][x] = rField[y][x] - 1;
+                    if (rField[y][x] <= 0) {
+                        field[y][x] = CellStatus.SUSCEPTIBLE;
+                        rField[y][x] = 0;
                     }
                 }
             }
@@ -168,39 +170,39 @@ public class EpidemicState {
     }
 
     private void calcInfection() {
-        for (int x = 0; x < configuration.getTotalHeight(); x++) {
-            for (int y = 0; y < configuration.getTotalWidth(); y++) {
-                if (field[x][y] == CellStatus.SUSCEPTIBLE) {
+        for (int x = 0; x < configuration.getTotalWidth(); x++) {
+            for (int y = 0; y < configuration.getTotalHeight(); y++) {
+                if (field[y][x] == CellStatus.SUSCEPTIBLE) {
 
                     boolean getIll = false;
-                    if (field[xPos(x - 1)][yPos(y - 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[yPos(y - 1)][xPos(x - 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[x][yPos(y - 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[yPos(y - 1)][x] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[xPos(x + 1)][yPos(y - 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[yPos(y - 1)][xPos(x + 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[xPos(x + 1)][y] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[y][xPos(x + 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[xPos(x + 1)][yPos(y + 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[yPos(y + 1)][xPos(x + 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[x][yPos(y + 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[yPos(y + 1)][x] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[xPos(x - 1)][yPos(y + 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[yPos(y + 1)][xPos(x - 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
-                    if (field[xPos(x - 1)][y] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
+                    if (field[y][xPos(x - 1)] == CellStatus.INFECTED && Math.random() < configuration.getBeta()) {
                         getIll = true;
                     }
 
                     if (getIll == true) {
-                        field[x][y] = CellStatus.INFECTED;
-                        rField[x][y] = configuration.getImmunityDuration();
+                        field[y][x] = CellStatus.INFECTED;
+                        rField[y][x] = configuration.getImmunityDuration();
                     }
                 }
             }
@@ -213,9 +215,9 @@ public class EpidemicState {
         this.R = 0;
         for(int x = 0; x < configuration.getTotalWidth(); x++) {
             for(int y = 0; y < configuration.getTotalHeight(); y++) {
-                if(field[x][y] == CellStatus.SUSCEPTIBLE) this.S++;
-                if(field[x][y] == CellStatus.INFECTED) this.I++;
-                if(field[x][y] == CellStatus.RECOVERED) this.R++;
+                if(field[y][x] == CellStatus.SUSCEPTIBLE) this.S++;
+                if(field[y][x] == CellStatus.INFECTED) this.I++;
+                if(field[y][x] == CellStatus.RECOVERED) this.R++;
             }
         }
     }

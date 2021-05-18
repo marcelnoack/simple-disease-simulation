@@ -89,10 +89,10 @@ public class MainView implements IView {
                 int yHelper = 0;
                 for (int y = y0; y < y1; y++) {
                     if (yHelper < y1 - y0) {
-                        if (newField[x][y] == CellStatus.EMPTY) pixelWriter.setColor(xHelper, yHelper, Color.BLACK);
-                        if (newField[x][y] == CellStatus.SUSCEPTIBLE) pixelWriter.setColor(xHelper, yHelper, Color.WHITE);
-                        if (newField[x][y] == CellStatus.INFECTED) pixelWriter.setColor(xHelper, yHelper, Color.RED);
-                        if (newField[x][y] == CellStatus.RECOVERED) pixelWriter.setColor(xHelper, yHelper, Color.BLUE);
+                        if (newField[y][x] == CellStatus.EMPTY) pixelWriter.setColor(xHelper, yHelper, Color.BLACK);
+                        if (newField[y][x] == CellStatus.SUSCEPTIBLE) pixelWriter.setColor(xHelper, yHelper, Color.WHITE);
+                        if (newField[y][x] == CellStatus.INFECTED) pixelWriter.setColor(xHelper, yHelper, Color.RED);
+                        if (newField[y][x] == CellStatus.RECOVERED) pixelWriter.setColor(xHelper, yHelper, Color.BLUE);
 
                         yHelper++;
                     }

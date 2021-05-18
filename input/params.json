@@ -1,17 +1,21 @@
 {
-  "totalWidth": 1000,
-  "totalHeight": 1000,
+  "totalWidth": 400,
+  "totalHeight": 400,
   "x0": 0,
   "x1": 400,
   "y0": 0,
-  "y1":400,
-  "S": 95000,
-  "I": 1,
+  "y1": 400,
+  "S": 100000,
+  "I": 3,
   "R": 0,
   "beta": 0.33,
   "durations": "FIXED",
   "immunityDuration": 100,
   "infectionDuration": 30,
   "maxSteps": 0,
-  "initialDistribution": []
+  "initialDistribution": [{
+    "x": 50,
+    "y": 350,
+    "status": "INFECTED"
+  }]
 }
