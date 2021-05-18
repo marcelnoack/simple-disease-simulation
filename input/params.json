@@ -1,21 +1,18 @@
 {
-  "totalWidth": 400,
-  "totalHeight": 400,
+  "totalWidth": 1500,
+  "totalHeight": 1500,
   "x0": 0,
-  "x1": 400,
+  "x1": 100,
   "y0": 0,
-  "y1": 400,
-  "S": 100000,
-  "I": 3,
+  "y1": 100,
+  "S": 110000,
+  "I": 1,
   "R": 0,
   "beta": 0.33,
   "durations": "FIXED",
   "immunityDuration": 100,
   "infectionDuration": 30,
   "maxSteps": 0,
-  "initialDistribution": [{
-    "x": 50,
-    "y": 350,
-    "status": "INFECTED"
-  }]
+  "initialDistribution": [],
+  "mode": "PARALLEL"
 }

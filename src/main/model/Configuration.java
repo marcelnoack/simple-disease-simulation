@@ -15,6 +15,8 @@ public class Configuration {
     private static final int S = 800000, I = 1, R = 0;
     private static final int MAX_STEPS = 0;
     private static final double BETA = 0.33;
+    private static final CalculationMode MODE = CalculationMode.SEQUENTIAL;
+    public static final EpidemicModel MODEL = EpidemicModel.SIRS;
 
     private int totalWidth, totalHeight;
     private int x0, x1, y0, y1;
@@ -23,13 +25,14 @@ public class Configuration {
     private int immunityDuration, infectionDuration;
     private int maxSteps;
     private ArrayList<Cell> initialDistribution;
+    private CalculationMode mode;
 
     private enum DurationsMode {
         FIXED,
         RANDOM
     }
 
-    public Configuration(int totalWidth, int totalHeight, int x0, int x1, int y0, int y1, int S, int I, int R, double beta, int immunityDuration, int infectionDuration, int maxSteps, ArrayList<Cell> initialDistribution) {
+    public Configuration(int totalWidth, int totalHeight, int x0, int x1, int y0, int y1, int S, int I, int R, double beta, int immunityDuration, int infectionDuration, int maxSteps, ArrayList<Cell> initialDistribution, CalculationMode mode) {
         this.totalWidth = totalWidth;
         this.totalHeight = totalHeight;
         this.x0 = x0;
@@ -44,6 +47,7 @@ public class Configuration {
         this.infectionDuration = infectionDuration;
         this.maxSteps = maxSteps;
         this.initialDistribution = initialDistribution;
+        this.mode = mode;
 
         System.out.println(this.toString());
     }
@@ -104,6 +108,10 @@ public class Configuration {
         return initialDistribution;
     }
 
+    public CalculationMode getMode() {
+        return mode;
+    }
+
     @Override
     public String toString() {
         return "Configuration{" +
@@ -125,7 +133,7 @@ public class Configuration {
     }
 
     private static boolean isValidInput(JSONObject jsonObject) {
-        String[] params = {"totalWidth", "totalHeight", "x0", "x1", "y0", "y1", "S", "I", "R", "durations", "immunityDuration", "infectionDuration", "maxSteps", "beta", "initialDistribution"};
+        String[] params = {"totalWidth", "totalHeight", "x0", "x1", "y0", "y1", "S", "I", "R", "durations", "immunityDuration", "infectionDuration", "maxSteps", "beta", "initialDistribution", "mode"};
         try {
             for (String param : params) {
                 jsonObject.get(param);
@@ -142,6 +150,7 @@ public class Configuration {
         int totalWidth, totalHeight, x0, x1, y0, y1, s, i, r, immunityDuration, infectionDuration, maxSteps;
         double beta;
         ArrayList<Cell> initialDistribution = new ArrayList<>();
+        CalculationMode mode;
 
         totalWidth = jsonObject.getInt("totalWidth");
         if (totalWidth <= 0) totalWidth = TOTAL_WIDTH;
@@ -184,13 +193,14 @@ public class Configuration {
 
             initialDistribution.add(helperCell);
         }
+        mode = CalculationMode.valueOf(jsonObject.getString("mode"));
 
-        return new Configuration(totalWidth, totalHeight, x0, x1, y0, y1, s, i, r, beta, immunityDuration, infectionDuration, maxSteps, initialDistribution);
+        return new Configuration(totalWidth, totalHeight, x0, x1, y0, y1, s, i, r, beta, immunityDuration, infectionDuration, maxSteps, initialDistribution, mode);
     }
 
     public static Configuration createFromJson(JSONObject jsonObject) {
         if (!Configuration.isValidInput(jsonObject))
-            return new Configuration(TOTAL_WIDTH, TOTAL_HEIGHT, X_0, X_1, Y_0, Y_1, S, I, R, BETA, ThreadLocalRandom.current().nextInt(30, 40 + 1), ThreadLocalRandom.current().nextInt(30, 40 + 1), MAX_STEPS, new ArrayList<Cell>());
+            return new Configuration(TOTAL_WIDTH, TOTAL_HEIGHT, X_0, X_1, Y_0, Y_1, S, I, R, BETA, ThreadLocalRandom.current().nextInt(30, 40 + 1), ThreadLocalRandom.current().nextInt(30, 40 + 1), MAX_STEPS, new ArrayList<Cell>(), MODE);
 
         return Configuration.constructFromJson(jsonObject);
     }
