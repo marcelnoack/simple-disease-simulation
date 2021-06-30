@@ -3,7 +3,7 @@ package main.model;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ParallelSIRS implements IModelStrategy {
-    private static final int THREAD_COUNT = 8;
+    private static final int THREAD_COUNT = 4;
 
     @Override
     public void calcStep(Configuration configuration, CellStatus[][] field, int[][] rField) {
