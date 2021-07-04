@@ -4,39 +4,39 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SequentialSIRS implements IModelStrategy {
     @Override
-    public void calcStep(Configuration configuration, CellStatus[][] field, int[][] rField) {
+    public void calcStep(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField) {
         int t;
         int x2 = 0;
         int y2 = 0;
 
-        for (int x = 0; x < configuration.getTotalWidth(); x++) {
-            for (int y = 0; y < configuration.getTotalHeight(); y++) {
+        for (int x = 0; x < totalWidth; x++) {
+            for (int y = 0; y < totalHeight; y++) {
                 if (field[y][x] != CellStatus.EMPTY) {
                     t = ThreadLocalRandom.current().nextInt(8);
 
                     if (t == 0) {
-                        x2 = EpidemicState.xPos(x - 1, configuration.getTotalWidth());
-                        y2 = EpidemicState.yPos(y - 1, configuration.getTotalHeight());
+                        x2 = EpidemicState.xPos(x - 1, totalWidth);
+                        y2 = EpidemicState.yPos(y - 1, totalHeight);
                     } else if (t == 1) {
                         x2 = x;
-                        y2 = EpidemicState.yPos(y - 1, configuration.getTotalHeight());
+                        y2 = EpidemicState.yPos(y - 1, totalHeight);
                     } else if (t == 2) {
-                        x2 = EpidemicState.xPos(x + 1, configuration.getTotalWidth());
-                        y2 = EpidemicState.yPos(y - 1, configuration.getTotalHeight());
+                        x2 = EpidemicState.xPos(x + 1, totalWidth);
+                        y2 = EpidemicState.yPos(y - 1, totalHeight);
                     } else if (t == 3) {
-                        x2 = EpidemicState.xPos(x + 1, configuration.getTotalWidth());
+                        x2 = EpidemicState.xPos(x + 1, totalWidth);
                         y2 = y;
                     } else if (t == 4) {
-                        x2 = EpidemicState.xPos(x + 1, configuration.getTotalWidth());
-                        y2 = EpidemicState.yPos(y + 1, configuration.getTotalHeight());
+                        x2 = EpidemicState.xPos(x + 1, totalWidth);
+                        y2 = EpidemicState.yPos(y + 1, totalHeight);
                     } else if (t == 5) {
                         x2 = x;
-                        y2 = EpidemicState.yPos(y + 1, configuration.getTotalHeight());
+                        y2 = EpidemicState.yPos(y + 1, totalHeight);
                     } else if (t == 6) {
-                        x2 = EpidemicState.xPos(x - 1, configuration.getTotalWidth());
-                        y2 = EpidemicState.yPos(y + 1, configuration.getTotalHeight());
+                        x2 = EpidemicState.xPos(x - 1, totalWidth);
+                        y2 = EpidemicState.yPos(y + 1, totalHeight);
                     } else if (t == 7) {
-                        x2 = EpidemicState.xPos(x - 1, configuration.getTotalWidth());
+                        x2 = EpidemicState.xPos(x - 1, totalWidth);
                         y2 = y;
                     }
 

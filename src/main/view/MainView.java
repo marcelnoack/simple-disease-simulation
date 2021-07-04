@@ -110,7 +110,7 @@ public class MainView implements IView {
                 + " | S: " + DECIMAL_FORMAT.format((sCount / nonEmptyCellCount) * 100) + "%"
                 + " | I: " + DECIMAL_FORMAT.format((iCount / nonEmptyCellCount) * 100) + "%"
                 + " | R: " + DECIMAL_FORMAT.format((rCount / nonEmptyCellCount) * 100) + "%";
-        this.label.setText(newText);
+        label.setText(newText);
     }
 
     private void setDimensions(int x0, int x1, int y0, int y1) {
