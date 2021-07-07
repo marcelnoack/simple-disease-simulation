@@ -15,7 +15,7 @@ public class Configuration {
     private static final int S = 800000, I = 1, R = 0;
     private static final int MAX_STEPS = 0;
     private static final double BETA = 0.33;
-    private static final CalculationMode MODE = CalculationMode.SEQUENTIAL;
+    private static final CalculationMode MODE = CalculationMode.PARALLEL;
     public static final EpidemicModel MODEL = EpidemicModel.SIRS;
 
     private int totalWidth, totalHeight;

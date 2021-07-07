@@ -1,7 +1,10 @@
 package main.model;
 
-import java.util.ArrayList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 import java.util.concurrent.ThreadLocalRandom;
+import java.text.DecimalFormat;
 
 public class EpidemicState {
     private int S, I, R;
@@ -29,11 +32,12 @@ public class EpidemicState {
 
         this.field = new CellStatus[rows][columns];
         this.rField = new int[rows][columns];
-        for (int x = 0; x < columns; x++) {
-            for (int y = 0; y < rows; y++) {
-                this.field[y][x] = CellStatus.EMPTY;
-                this.rField[y][x] = 0;
-            }
+        int x, y, xy;
+        for (xy = 0; xy < columns * rows; xy++) {
+            x = xy / columns;
+            y = xy % rows;
+            this.field[y][x] = CellStatus.EMPTY;
+            this.rField[y][x] = 0;
         }
 
         randPerm(configuration.getS(), CellStatus.SUSCEPTIBLE);
@@ -108,13 +112,23 @@ public class EpidemicState {
         this.S = 0;
         this.I = 0;
         this.R = 0;
-        for(int x = 0; x < configuration.getTotalWidth(); x++) {
-            for(int y = 0; y < configuration.getTotalHeight(); y++) {
-                if(field[y][x] == CellStatus.SUSCEPTIBLE) this.S++;
-                if(field[y][x] == CellStatus.INFECTED) this.I++;
-                if(field[y][x] == CellStatus.RECOVERED) this.R++;
-            }
+        int x, y, xy;
+//        for(int x = 0; x < configuration.getTotalWidth(); x++) {
+//            for(int y = 0; y < configuration.getTotalHeight(); y++) {
+//                if(field[y][x] == CellStatus.SUSCEPTIBLE) this.S++;
+//                if(field[y][x] == CellStatus.INFECTED) this.I++;
+//                if(field[y][x] == CellStatus.RECOVERED) this.R++;
+//            }
+//        }
+        for(xy = 0; xy < configuration.getTotalWidth() * configuration.getTotalHeight(); xy++) {
+            x = xy / configuration.getTotalWidth();
+            y = xy % configuration.getTotalHeight();
+            if (field[y][x] == CellStatus.SUSCEPTIBLE) this.S++;
+            if (field[y][x] == CellStatus.INFECTED) this.I++;
+            if (field[y][x] == CellStatus.RECOVERED) this.R++;
         }
+
+
     }
 
     private void incrementCurrentStep() {
@@ -124,11 +138,12 @@ public class EpidemicState {
     public void handleIteration() {
         if (configuration.getMaxSteps() == 0 || (configuration.getMaxSteps() != 0 && currentStep <= configuration.getMaxSteps())) {
             IModelStrategy modelStrategy = ModelFactory.getModelStrategy(configuration.getMode(), Configuration.MODEL);
-            modelStrategy.calcStep(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField);
-            modelStrategy.calcRecovery(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField, configuration.getImmunityDuration());
-            modelStrategy.calcInfection(configuration.getTotalWidth(), configuration.getTotalHeight(), configuration.getBeta(), field, rField, configuration.getImmunityDuration());
-            incrementCurrentStep();
+            modelStrategy.calcIteration(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField, configuration.getBeta(), configuration.getImmunityDuration(), configuration.getInfectionDuration());
+//            modelStrategy.calcStep(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField);
+//            modelStrategy.calcRecovery(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField, configuration.getImmunityDuration());
+//            modelStrategy.calcInfection(configuration.getTotalWidth(), configuration.getTotalHeight(), configuration.getBeta(), field, rField, configuration.getInfectionDuration());
             calcSIRCounts();
+            incrementCurrentStep();
         }
     }
 }

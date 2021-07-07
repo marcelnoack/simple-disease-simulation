@@ -10,7 +10,7 @@
   "R": 0,
   "beta": 0.33,
   "durations": "FIXED",
-  "immunityDuration": 100,
+  "immunityDuration": 10,
   "infectionDuration": 30,
   "maxSteps": 0,
   "initialDistribution": [],

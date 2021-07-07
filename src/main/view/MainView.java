@@ -14,8 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import main.controller.IController;
 import main.model.CellStatus;
+import main.model.EpidemicState;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class MainView implements IView {
@@ -32,7 +32,7 @@ public class MainView implements IView {
     private int x0, x1, y0, y1;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
 
-    public MainView(IController controller, int x0, int x1, int y0, int y1, CellStatus[][] field) {
+    public MainView(EpidemicState model, IController controller, int x0, int x1, int y0, int y1, CellStatus[][] field) {
         this.mainController = controller;
         this.rootPane = new BorderPane();
 
