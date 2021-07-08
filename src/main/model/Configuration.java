@@ -184,6 +184,7 @@ public class Configuration {
         beta = jsonObject.getDouble("beta");
         if (beta < 0) beta = BETA;
 
+        // TODO: validation for initialDistribution
         for (Object o : jsonObject.getJSONArray("initialDistribution")) {
             Cell helperCell = new Cell();
             JSONObject jO = (JSONObject) o;

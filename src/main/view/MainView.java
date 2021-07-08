@@ -50,19 +50,12 @@ public class MainView implements IView {
         label.setPrefHeight(20);
 
         HBox hBox = new HBox();
-        Button bStart = new Button("Start");
-        Button bPause = new Button("Pause");
+        Button bStart = new Button("Start/Stop");
         Button bReset = new Button("Reload Params and Reset");
         bStart.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-                mainController.start();
-            }
-        });
-        bPause.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                mainController.stop();
+                mainController.toggleLoop();
             }
         });
         bReset.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -71,7 +64,7 @@ public class MainView implements IView {
                 mainController.reset();
             }
         });
-        hBox.getChildren().addAll(bStart, bPause, bReset);
+        hBox.getChildren().addAll(bStart, bReset);
         hBox.setPrefHeight(40);
         hBox.setAlignment(Pos.CENTER);
 
@@ -90,7 +83,8 @@ public class MainView implements IView {
                 for (int y = y0; y < y1; y++) {
                     if (yHelper < y1 - y0) {
                         if (newField[y][x] == CellStatus.EMPTY) pixelWriter.setColor(xHelper, yHelper, Color.BLACK);
-                        if (newField[y][x] == CellStatus.SUSCEPTIBLE) pixelWriter.setColor(xHelper, yHelper, Color.WHITE);
+                        if (newField[y][x] == CellStatus.SUSCEPTIBLE)
+                            pixelWriter.setColor(xHelper, yHelper, Color.WHITE);
                         if (newField[y][x] == CellStatus.INFECTED) pixelWriter.setColor(xHelper, yHelper, Color.RED);
                         if (newField[y][x] == CellStatus.RECOVERED) pixelWriter.setColor(xHelper, yHelper, Color.BLUE);
 
@@ -103,10 +97,10 @@ public class MainView implements IView {
     }
 
     @Override
-    public void updateLabel(int step, int sCount, int iCount, int rCount) {
+    public void updateLabel(int step, int initialCellCount, int sCount, int iCount, int rCount) {
         double nonEmptyCellCount = sCount + iCount + rCount;
-        String newText = "Step: " + step
-                + " | N = " + (int) nonEmptyCellCount
+        String newText = "N = " + initialCellCount
+                + " | Step: " + step
                 + " | S: " + DECIMAL_FORMAT.format((sCount / nonEmptyCellCount) * 100) + "%"
                 + " | I: " + DECIMAL_FORMAT.format((iCount / nonEmptyCellCount) * 100) + "%"
                 + " | R: " + DECIMAL_FORMAT.format((rCount / nonEmptyCellCount) * 100) + "%";
