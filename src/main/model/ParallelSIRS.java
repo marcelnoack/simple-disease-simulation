@@ -6,14 +6,14 @@ public class ParallelSIRS implements IModelStrategy {
     private static final int THREAD_COUNT = 8;
 
     @Override
-    public void calcIteration(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField, double beta, int immunityDuration, int infectionDuration) {
+    public void calcIteration(int totalWidth, int totalHeight, byte[][] field, short[][] rField, double beta, short immunityDuration, short infectionDuration) {
         calcStep(totalWidth, totalHeight, field, rField);
         calcRecovery(totalWidth, totalHeight, field, rField, immunityDuration);
         calcInfection(totalWidth, totalHeight, beta, field, rField, infectionDuration);
     }
 
     @Override
-    public void calcStep(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField) {
+    public void calcStep(int totalWidth, int totalHeight, byte[][] field, short[][] rField) {
         Thread[] threads = new Thread[THREAD_COUNT];
         int divisibleWidth = _calcDivisibleWidth(totalWidth - 1, THREAD_COUNT - 1);
         for (int i = 0; i < THREAD_COUNT; i++) {
@@ -61,8 +61,8 @@ public class ParallelSIRS implements IModelStrategy {
         }
     }
 
-    private void _calcStepCell(CellStatus[][] field, int[][] rField, int x, int y, int t, int x2, int y2, int totalWidth, int totalHeight) {
-        if (field[y][x] != CellStatus.EMPTY) {
+    private void _calcStepCell(byte[][] field, short[][] rField, int x, int y, int t, int x2, int y2, int totalWidth, int totalHeight) {
+        if (field[y][x] != 0) {
             t = ThreadLocalRandom.current().nextInt(8);
 
             if (t == 0) {
@@ -91,12 +91,12 @@ public class ParallelSIRS implements IModelStrategy {
                 y2 = y;
             }
 
-            if (field[y2][x2] == CellStatus.EMPTY) EpidemicState.move(x, y, x2, y2, field, rField);
+            if (field[y2][x2] == 0) EpidemicState.move(x, y, x2, y2, field, rField);
         }
     }
 
     @Override
-    public void calcRecovery(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField, int immunityDuration) {
+    public void calcRecovery(int totalWidth, int totalHeight, byte[][] field, short[][] rField, short immunityDuration) {
         Thread[] threads = new Thread[THREAD_COUNT];
         int divisibleWidth = _calcDivisibleWidth(totalWidth - 1, THREAD_COUNT - 1);
         for (int i = 0; i < THREAD_COUNT; i++) {
@@ -140,24 +140,24 @@ public class ParallelSIRS implements IModelStrategy {
         }
     }
 
-    private void _calcRecoveryCell(CellStatus[][] field, int[][] rField, int x, int y, int immunityDuration) {
-        if (field[y][x] == CellStatus.INFECTED) {
-            rField[y][x] = rField[y][x] - 1;
+    private void _calcRecoveryCell(byte[][] field, short[][] rField, int x, int y, short immunityDuration) {
+        if (field[y][x] == 2) {
+            rField[y][x] = (short) (rField[y][x] - 1);
             if (rField[y][x] <= 0) {
-                field[y][x] = CellStatus.RECOVERED;
+                field[y][x] = 3;
                 rField[y][x] = immunityDuration;
             }
-        } else if (field[y][x] == CellStatus.RECOVERED) {
-            rField[y][x] = rField[y][x] - 1;
+        } else if (field[y][x] == 3) {
+            rField[y][x] = (short) (rField[y][x] - 1);
             if (rField[y][x] <= 0) {
-                field[y][x] = CellStatus.SUSCEPTIBLE;
+                field[y][x] = 1;
                 rField[y][x] = 0;
             }
         }
     }
 
     @Override
-    public void calcInfection(int totalWidth, int totalHeight, double beta, CellStatus[][] field, int[][] rField, int infectionDuration) {
+    public void calcInfection(int totalWidth, int totalHeight, double beta, byte[][] field, short[][] rField, short infectionDuration) {
         Thread[] threads = new Thread[THREAD_COUNT];
         int divisibleWidth = _calcDivisibleWidth(totalWidth - 1, THREAD_COUNT - 1);
         for (int i = 0; i < THREAD_COUNT; i++) {
@@ -201,37 +201,37 @@ public class ParallelSIRS implements IModelStrategy {
         }
     }
 
-    private void _calcInfectionCell(CellStatus[][] field, int[][] rField, int x, int y, int totalWidth, int totalHeight, double beta, int infectionDuration) {
-        if (field[y][x] == CellStatus.SUSCEPTIBLE) {
+    private void _calcInfectionCell(byte[][] field, short[][] rField, int x, int y, int totalWidth, int totalHeight, double beta, short infectionDuration) {
+        if (field[y][x] == 1) {
 
             boolean getIll = false;
-            if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[EpidemicState.yPos(y - 1, totalHeight)][x] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[EpidemicState.yPos(y - 1, totalHeight)][x] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[y][EpidemicState.xPos(x + 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[y][EpidemicState.xPos(x + 1, totalWidth)] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[EpidemicState.yPos(y + 1, totalHeight)][x] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[EpidemicState.yPos(y + 1, totalHeight)][x] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == 2 && Math.random() < beta) {
                 getIll = true;
             }
-            if (field[y][EpidemicState.xPos(x - 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+            if (field[y][EpidemicState.xPos(x - 1, totalWidth)] == 2 && Math.random() < beta) {
                 getIll = true;
             }
 
             if (getIll == true) {
-                field[y][x] = CellStatus.INFECTED;
+                field[y][x] = 2;
                 rField[y][x] = infectionDuration;
             }
         }

@@ -1,12 +1,10 @@
 package main.model;
 
 public interface IModelStrategy {
-    public void calcIteration(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField, double beta, int immunityDuration, int infectionDuration);
-    public void calcStep(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField);
-
-    public void calcRecovery(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField,
-            int immunityDuration);
-
-    public void calcInfection(int totalWidth, int totalHeight, double beta, CellStatus[][] field, int[][] rField,
-            int infectionDuration);
+    public void calcIteration(int totalWidth, int totalHeight, byte[][] field, short[][] rField, double beta, short immunityDuration, short infectionDuration);
+    public void calcStep(int totalWidth, int totalHeight, byte[][] field, short[][] rField);
+    public void calcRecovery(int totalWidth, int totalHeight, byte[][] field, short[][] rField,
+            short immunityDuration);
+    public void calcInfection(int totalWidth, int totalHeight, double beta, byte[][] field, short[][] rField,
+            short infectionDuration);
 }

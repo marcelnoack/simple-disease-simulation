@@ -32,7 +32,7 @@ public class MainView implements IView {
     private int x0, x1, y0, y1;
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
 
-    public MainView(EpidemicState model, IController controller, int x0, int x1, int y0, int y1, CellStatus[][] field) {
+    public MainView(EpidemicState model, IController controller, int x0, int x1, int y0, int y1, byte[][] field) {
         this.mainController = controller;
         this.rootPane = new BorderPane();
 
@@ -75,18 +75,18 @@ public class MainView implements IView {
     }
 
     @Override
-    public void updateImage(CellStatus[][] newField) {
+    public void updateImage(byte[][] newField) {
         int xHelper = 0;
         for (int x = x0; x < x1; x++) {
             if (xHelper < x1 - x0) {
                 int yHelper = 0;
                 for (int y = y0; y < y1; y++) {
                     if (yHelper < y1 - y0) {
-                        if (newField[y][x] == CellStatus.EMPTY) pixelWriter.setColor(xHelper, yHelper, Color.BLACK);
-                        if (newField[y][x] == CellStatus.SUSCEPTIBLE)
+                        if (newField[y][x] == 0) pixelWriter.setColor(xHelper, yHelper, Color.BLACK);
+                        if (newField[y][x] == 1)
                             pixelWriter.setColor(xHelper, yHelper, Color.WHITE);
-                        if (newField[y][x] == CellStatus.INFECTED) pixelWriter.setColor(xHelper, yHelper, Color.RED);
-                        if (newField[y][x] == CellStatus.RECOVERED) pixelWriter.setColor(xHelper, yHelper, Color.BLUE);
+                        if (newField[y][x] == 2) pixelWriter.setColor(xHelper, yHelper, Color.RED);
+                        if (newField[y][x] == 3) pixelWriter.setColor(xHelper, yHelper, Color.BLUE);
 
                         yHelper++;
                     }
@@ -115,7 +115,7 @@ public class MainView implements IView {
     }
 
     @Override
-    public void resetImage(int x0, int x1, int y0, int y1, CellStatus[][] field) {
+    public void resetImage(int x0, int x1, int y0, int y1, byte[][] field) {
         this.setDimensions(x0, x1, y0, y1);
         this.imageView = new ImageView();
         this.img = new WritableImage(x1 - x0, y1 - y0);

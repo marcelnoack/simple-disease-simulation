@@ -1,16 +1,13 @@
 package main.model;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 import java.util.concurrent.ThreadLocalRandom;
-import java.text.DecimalFormat;
 
 public class EpidemicState {
     private int S, I, R;
     private int currentStep;
-    private CellStatus[][] field;
-    private int[][] rField;
+    // EMPTY = 0; SUSCEPTIBLE = 1; INFECTED = 2; RECOVERED = 3;
+    private byte[][] field;
+    private short[][] rField;
     private Configuration configuration;
 
     public EpidemicState(Configuration configuration) {
@@ -30,37 +27,41 @@ public class EpidemicState {
         int rows = configuration.getTotalHeight();
         int columns = configuration.getTotalWidth();
 
-        this.field = new CellStatus[rows][columns];
-        this.rField = new int[rows][columns];
+        this.field = new byte[rows][columns];
+        this.rField = new short[rows][columns];
         int x, y, xy;
         for (xy = 0; xy < columns * rows; xy++) {
             x = xy / columns;
             y = xy % rows;
-            this.field[y][x] = CellStatus.EMPTY;
+            this.field[y][x] = 0;
             this.rField[y][x] = 0;
         }
 
-        randPerm(configuration.getS(), CellStatus.SUSCEPTIBLE);
+        randPerm(configuration.getS(), (byte) 1);
 
         if (configuration.getInitialDistribution().size() > 0) {
             for (Cell c : configuration.getInitialDistribution()) {
-                this.field[c.getY()][c.getX()] = c.getStatus();
+                byte statusValue = 0;
+                if(c.getStatus() == CellStatus.SUSCEPTIBLE) statusValue = 1;
+                if(c.getStatus() == CellStatus.INFECTED) statusValue = 2;
+                if(c.getStatus() == CellStatus.RECOVERED) statusValue = 3;
+                this.field[c.getY()][c.getX()] = statusValue;
                 if(c.getStatus() == CellStatus.INFECTED) rField[c.getY()][c.getX()] = configuration.getInfectionDuration();
                 if(c.getStatus() == CellStatus.RECOVERED) rField[c.getY()][c.getX()] = configuration.getImmunityDuration();
             }
         } else {
-            randPerm(configuration.getI(), CellStatus.INFECTED);
-            randPerm(configuration.getR(), CellStatus.RECOVERED);
+            randPerm(configuration.getI(), (byte) 2);
+            randPerm(configuration.getR(), (byte) 3);
         }
     }
 
-    private void randPerm(int count, CellStatus cellStatus) {
+    private void randPerm(int count, byte cellStatus) {
         for (int c = 0; c < count; c++) {
             int x = ThreadLocalRandom.current().nextInt(configuration.getTotalWidth());
             int y = ThreadLocalRandom.current().nextInt(configuration.getTotalHeight());
             field[y][x] = cellStatus;
-            if(cellStatus == CellStatus.INFECTED) rField[y][x] = configuration.getInfectionDuration();
-            if(cellStatus == CellStatus.RECOVERED) rField[y][x] = configuration.getImmunityDuration();
+            if(cellStatus == 2) rField[y][x] = configuration.getInfectionDuration();
+            if(cellStatus == 3) rField[y][x] = configuration.getImmunityDuration();
         }
     }
 
@@ -80,7 +81,7 @@ public class EpidemicState {
         return this.currentStep;
     }
 
-    public CellStatus[][] getCurrentField() {
+    public byte[][] getCurrentField() {
         return this.field;
     }
 
@@ -98,14 +99,14 @@ public class EpidemicState {
         return y2;
     }
 
-    public static void move(int x1, int y1, int x2, int y2, CellStatus[][] field, int[][] rField) {
-        CellStatus cellStatus = field[y1][x1];
+    public static void move(int x1, int y1, int x2, int y2, byte[][] field, short[][] rField) {
+        byte cellStatus = field[y1][x1];
         field[y1][x1] = field[y2][x2];
         field[y2][x2] = cellStatus;
 
         int h = rField[y1][x1];
         rField[y1][x1] = rField[y2][x2];
-        rField[y2][x2] = h;
+        rField[y2][x2] = (short) h;
     }
 
     private void calcSIRCounts() {
@@ -113,19 +114,13 @@ public class EpidemicState {
         this.I = 0;
         this.R = 0;
         int x, y, xy;
-//        for(int x = 0; x < configuration.getTotalWidth(); x++) {
-//            for(int y = 0; y < configuration.getTotalHeight(); y++) {
-//                if(field[y][x] == CellStatus.SUSCEPTIBLE) this.S++;
-//                if(field[y][x] == CellStatus.INFECTED) this.I++;
-//                if(field[y][x] == CellStatus.RECOVERED) this.R++;
-//            }
-//        }
+
         for(xy = 0; xy < configuration.getTotalWidth() * configuration.getTotalHeight(); xy++) {
             x = xy / configuration.getTotalWidth();
             y = xy % configuration.getTotalHeight();
-            if (field[y][x] == CellStatus.SUSCEPTIBLE) this.S++;
-            if (field[y][x] == CellStatus.INFECTED) this.I++;
-            if (field[y][x] == CellStatus.RECOVERED) this.R++;
+            if (field[y][x] == 1) this.S++;
+            if (field[y][x] == 2) this.I++;
+            if (field[y][x] == 3) this.R++;
         }
 
 

@@ -4,14 +4,14 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SequentialSIRS implements IModelStrategy {
     @Override
-    public void calcIteration(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField, double beta, int immunityDuration, int infectionDuration) {
+    public void calcIteration(int totalWidth, int totalHeight, byte[][] field, short[][] rField, double beta, short immunityDuration, short infectionDuration) {
         calcStep(totalWidth, totalHeight, field, rField);
         calcRecovery(totalWidth, totalHeight, field, rField, immunityDuration);
         calcInfection(totalWidth, totalHeight, beta, field, rField, infectionDuration);
     }
 
     @Override
-    public void calcStep(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField) {
+    public void calcStep(int totalWidth, int totalHeight, byte[][] field, short[][] rField) {
         int t;
         int x2 = 0;
         int y2 = 0;
@@ -20,7 +20,7 @@ public class SequentialSIRS implements IModelStrategy {
         for (xy = 0; xy < totalWidth * totalHeight; xy++) {
             x = xy / totalWidth;
             y = xy % totalHeight;
-            if (field[y][x] != CellStatus.EMPTY) {
+            if (field[y][x] != 0) {
                 t = ThreadLocalRandom.current().nextInt(8);
 
                 if (t == 0) {
@@ -49,27 +49,27 @@ public class SequentialSIRS implements IModelStrategy {
                     y2 = y;
                 }
 
-                if (field[y2][x2] == CellStatus.EMPTY) EpidemicState.move(x, y, x2, y2, field, rField);
+                if (field[y2][x2] == 0) EpidemicState.move(x, y, x2, y2, field, rField);
             }
         }
     }
 
     @Override
-    public void calcRecovery(int totalWidth, int totalHeight, CellStatus[][] field, int[][] rField, int immunityDuration) {
+    public void calcRecovery(int totalWidth, int totalHeight, byte[][] field, short[][] rField, short immunityDuration) {
         int x, y, xy;
         for (xy = 0; xy < totalWidth * totalHeight; xy++) {
             x = xy / totalWidth;
             y = xy % totalHeight;
-            if (field[y][x] == CellStatus.INFECTED) {
-                rField[y][x] = rField[y][x] - 1;
+            if (field[y][x] == 2) {
+                rField[y][x] = (short) (rField[y][x] - 1);
                 if (rField[y][x] <= 0) {
-                    field[y][x] = CellStatus.RECOVERED;
+                    field[y][x] = 3;
                     rField[y][x] = immunityDuration;
                 }
-            } else if (field[y][x] == CellStatus.RECOVERED) {
-                rField[y][x] = rField[y][x] - 1;
+            } else if (field[y][x] == 3) {
+                rField[y][x] = (short) (rField[y][x] - 1);
                 if (rField[y][x] <= 0) {
-                    field[y][x] = CellStatus.SUSCEPTIBLE;
+                    field[y][x] = 1;
                     rField[y][x] = 0;
                 }
             }
@@ -77,41 +77,41 @@ public class SequentialSIRS implements IModelStrategy {
     }
 
     @Override
-    public void calcInfection(int totalWidth, int totalHeight, double beta, CellStatus[][] field, int[][] rField, int infectionDuration) {
+    public void calcInfection(int totalWidth, int totalHeight, double beta, byte[][] field, short[][] rField, short infectionDuration) {
         int x, y, xy;
         for (xy = 0; xy < totalWidth * totalHeight; xy++) {
             x = xy / totalWidth;
             y = xy % totalHeight;
-            if (field[y][x] == CellStatus.SUSCEPTIBLE) {
+            if (field[y][x] == 1) {
 
                 boolean getIll = false;
-                if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[EpidemicState.yPos(y - 1, totalHeight)][x] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[EpidemicState.yPos(y - 1, totalHeight)][x] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[EpidemicState.yPos(y - 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[y][EpidemicState.xPos(x + 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[y][EpidemicState.xPos(x + 1, totalWidth)] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x + 1, totalWidth)] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[EpidemicState.yPos(y + 1, totalHeight)][x] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[EpidemicState.yPos(y + 1, totalHeight)][x] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[EpidemicState.yPos(y + 1, totalHeight)][EpidemicState.xPos(x - 1, totalWidth)] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
-                if (field[y][EpidemicState.xPos(x - 1, totalWidth)] == CellStatus.INFECTED && Math.random() < beta) {
+                if (field[y][EpidemicState.xPos(x - 1, totalWidth)] == 2 && Math.random() < beta) {
                     getIll = true;
                 }
 
                 if (getIll == true) {
-                    field[y][x] = CellStatus.INFECTED;
+                    field[y][x] = 2;
                     rField[y][x] = infectionDuration;
                 }
             }

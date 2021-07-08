@@ -22,7 +22,7 @@ public class Configuration {
     private int x0, x1, y0, y1;
     private int s, i, r;
     private double beta;
-    private int immunityDuration, infectionDuration;
+    private short immunityDuration, infectionDuration;
     private int maxSteps;
     private ArrayList<Cell> initialDistribution;
     private CalculationMode mode;
@@ -32,7 +32,7 @@ public class Configuration {
         RANDOM
     }
 
-    public Configuration(int totalWidth, int totalHeight, int x0, int x1, int y0, int y1, int S, int I, int R, double beta, int immunityDuration, int infectionDuration, int maxSteps, ArrayList<Cell> initialDistribution, CalculationMode mode) {
+    public Configuration(int totalWidth, int totalHeight, int x0, int x1, int y0, int y1, int S, int I, int R, double beta, short immunityDuration, short infectionDuration, int maxSteps, ArrayList<Cell> initialDistribution, CalculationMode mode) {
         this.totalWidth = totalWidth;
         this.totalHeight = totalHeight;
         this.x0 = x0;
@@ -92,11 +92,11 @@ public class Configuration {
         return beta;
     }
 
-    public int getImmunityDuration() {
+    public short getImmunityDuration() {
         return immunityDuration;
     }
 
-    public int getInfectionDuration() {
+    public short getInfectionDuration() {
         return infectionDuration;
     }
 
@@ -147,7 +147,8 @@ public class Configuration {
 
 
     private static Configuration constructFromJson(JSONObject jsonObject) {
-        int totalWidth, totalHeight, x0, x1, y0, y1, s, i, r, immunityDuration, infectionDuration, maxSteps;
+        int totalWidth, totalHeight, x0, x1, y0, y1, s, i, r, maxSteps;
+        short immunityDuration, infectionDuration;
         double beta;
         ArrayList<Cell> initialDistribution = new ArrayList<>();
         CalculationMode mode;
@@ -171,13 +172,13 @@ public class Configuration {
         r = jsonObject.getInt("R");
         if (r < 0) r = R;
         if (DurationsMode.valueOf(jsonObject.getString("durations")) == DurationsMode.FIXED) {
-            immunityDuration = jsonObject.getInt("immunityDuration");
-            if (immunityDuration < 0) immunityDuration = ThreadLocalRandom.current().nextInt(30, 40 + 1);
-            infectionDuration = jsonObject.getInt("infectionDuration");
-            if (infectionDuration < 0) infectionDuration = ThreadLocalRandom.current().nextInt(30, 40 + 1);
+            immunityDuration = (short) jsonObject.getInt("immunityDuration");
+            if (immunityDuration < 0) immunityDuration = (short) ThreadLocalRandom.current().nextInt(30, 40 + 1);
+            infectionDuration = (short) jsonObject.getInt("infectionDuration");
+            if (infectionDuration < 0) infectionDuration = (short) ThreadLocalRandom.current().nextInt(30, 40 + 1);
         } else {
-            immunityDuration = ThreadLocalRandom.current().nextInt(30, 40 + 1);
-            infectionDuration = ThreadLocalRandom.current().nextInt(30, 40 + 1);
+            immunityDuration = (short) ThreadLocalRandom.current().nextInt(30, 40 + 1);
+            infectionDuration = (short) ThreadLocalRandom.current().nextInt(30, 40 + 1);
         }
         maxSteps = jsonObject.getInt("maxSteps");
         if (maxSteps < 0) maxSteps = MAX_STEPS;
@@ -201,7 +202,7 @@ public class Configuration {
 
     public static Configuration createFromJson(JSONObject jsonObject) {
         if (!Configuration.isValidInput(jsonObject))
-            return new Configuration(TOTAL_WIDTH, TOTAL_HEIGHT, X_0, X_1, Y_0, Y_1, S, I, R, BETA, ThreadLocalRandom.current().nextInt(30, 40 + 1), ThreadLocalRandom.current().nextInt(30, 40 + 1), MAX_STEPS, new ArrayList<Cell>(), MODE);
+            return new Configuration(TOTAL_WIDTH, TOTAL_HEIGHT, X_0, X_1, Y_0, Y_1, S, I, R, BETA, (short) ThreadLocalRandom.current().nextInt(30, 40 + 1), (short) ThreadLocalRandom.current().nextInt(30, 40 + 1), MAX_STEPS, new ArrayList<Cell>(), MODE);
 
         return Configuration.constructFromJson(jsonObject);
     }
