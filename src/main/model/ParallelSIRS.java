@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ParallelSIRS implements IModelStrategy {
-    private static final int THREAD_COUNT = 8;
+    private static final int THREAD_COUNT = Runtime.getRuntime().availableProcessors();
     private Lock lock = new ReentrantLock();
 
     @Override
@@ -29,16 +29,27 @@ public class ParallelSIRS implements IModelStrategy {
                     int y2 = 0;
 
                     if (totalWidth % THREAD_COUNT == 0) {
-                        for (int x = (totalWidth / THREAD_COUNT) * threadIndex; x < (totalWidth / THREAD_COUNT) * (threadIndex + 1); x++) {
+                        int start = (totalWidth / THREAD_COUNT) * threadIndex;
+                        int end = (totalWidth / THREAD_COUNT) * (threadIndex + 1);
+                        for (int x = start; x < end; x++) {
                             for (int y = 0; y < totalHeight; y++) {
-                                _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                if (x > (start + 1) && x < (end - 1)) {
+                                    _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                } else {
+                                    lock.lock();
+                                    try {
+                                        _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                    } finally {
+                                        lock.unlock();
+                                    }
+                                }
                             }
                         }
                     } else {
                         if (threadIndex == THREAD_COUNT - 1) { // allocate non-divisible rest to the last thread
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    if (x > (divisibleWidth + 1) || x < (totalWidth - 1)) {
+                                    if (x > (divisibleWidth + 1) && x < (totalWidth - 1)) {
                                         _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
                                     } else {
                                         lock.lock();
@@ -55,7 +66,7 @@ public class ParallelSIRS implements IModelStrategy {
                             int end = ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1));
                             for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    if (x > (start + 1) || x < (end - 1)) {
+                                    if (x > (start + 1) && x < (end - 1)) {
                                         _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
                                     } else {
                                         lock.unlock();
@@ -128,16 +139,27 @@ public class ParallelSIRS implements IModelStrategy {
                 @Override
                 public void run() {
                     if (totalWidth % THREAD_COUNT == 0) {
-                        for (int x = ((totalWidth / THREAD_COUNT) * threadIndex); x < ((totalWidth / THREAD_COUNT) * (threadIndex + 1)); x++) {
+                        int start = ((totalWidth / THREAD_COUNT) * threadIndex);
+                        int end = ((totalWidth / THREAD_COUNT) * (threadIndex + 1));
+                        for (int x = start; x < end; x++) {
                             for (int y = 0; y < totalHeight; y++) {
-                                _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                if (x > (start + 1) && x < (end - 1)) {
+                                    _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                } else {
+                                    lock.lock();
+                                    try {
+                                        _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                    } finally {
+                                        lock.unlock();
+                                    }
+                                }
                             }
                         }
                     } else {
                         if (threadIndex == THREAD_COUNT - 1) { // allocate non-divisible rest to the last thread
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    if (x > (divisibleWidth + 1) || x < (totalWidth - 1)) {
+                                    if (x > (divisibleWidth + 1) && x < (totalWidth - 1)) {
                                         _calcRecoveryCell(field, rField, x, y, immunityDuration);
                                     } else {
                                         lock.lock();
@@ -154,7 +176,7 @@ public class ParallelSIRS implements IModelStrategy {
                             int end = ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1));
                             for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    if (x > (start + 1) || x < (end - 1)) {
+                                    if (x > (start + 1) && x < (end - 1)) {
                                         _calcRecoveryCell(field, rField, x, y, immunityDuration);
                                     } else {
                                         lock.lock();
@@ -209,16 +231,27 @@ public class ParallelSIRS implements IModelStrategy {
                 @Override
                 public void run() {
                     if (totalWidth % THREAD_COUNT == 0) {
-                        for (int x = ((totalWidth / THREAD_COUNT) * threadIndex); x < ((totalWidth / THREAD_COUNT) * (threadIndex + 1)); x++) {
+                        int start = ((totalWidth / THREAD_COUNT) * threadIndex);
+                        int end = ((totalWidth / THREAD_COUNT) * (threadIndex + 1));
+                        for (int x = start; x < end; x++) {
                             for (int y = 0; y < totalHeight; y++) {
-                                _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                if (x > (start + 1) && x < (end - 1)) {
+                                    _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                } else {
+                                    lock.lock();
+                                    try {
+                                        _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                    } finally {
+                                        lock.unlock();
+                                    }
+                                }
                             }
                         }
                     } else {
                         if (threadIndex == THREAD_COUNT - 1) { // allocate non-divisible rest to the last thread
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    if (x > (divisibleWidth + 1) || x < (totalWidth - 1)) {
+                                    if (x > (divisibleWidth + 1) && x < (totalWidth - 1)) {
                                         _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
                                     } else {
                                         lock.lock();
@@ -235,7 +268,7 @@ public class ParallelSIRS implements IModelStrategy {
                             int end = ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1));
                             for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    if (x > (start + 1) || x < (end - 1)) {
+                                    if (x > (start + 1) && x < (end - 1)) {
                                         _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
                                     } else {
                                         lock.lock();
