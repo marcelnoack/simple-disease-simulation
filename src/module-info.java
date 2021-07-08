@@ -4,4 +4,5 @@ module PVR.Krankheitsausbreitung {
 
     opens main;
     opens main.helper;
+    opens main.model.calculation;
 }

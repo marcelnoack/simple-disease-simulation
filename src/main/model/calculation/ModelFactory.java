@@ -1,4 +1,4 @@
-package main.helper;
+package main.model.calculation;
 
 import main.model.types.CalculationMode;
 import main.model.types.EpidemicModel;

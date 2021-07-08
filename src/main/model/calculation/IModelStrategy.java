@@ -1,4 +1,4 @@
-package main.helper;
+package main.model.calculation;
 
 public interface IModelStrategy {
     public void calcIteration(int totalWidth, int totalHeight, byte[][] field, short[][] rField, double beta, short immunityDuration, short infectionDuration);

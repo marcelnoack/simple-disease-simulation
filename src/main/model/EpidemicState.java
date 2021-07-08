@@ -1,7 +1,7 @@
 package main.model;
 
-import main.helper.IModelStrategy;
-import main.helper.ModelFactory;
+import main.model.calculation.IModelStrategy;
+import main.model.calculation.ModelFactory;
 import main.model.types.Cell;
 import main.model.types.CellStatus;
 
