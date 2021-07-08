@@ -3,6 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import main.controller.MainController;
+import main.helper.JsonLoader;
 import main.model.Configuration;
 import main.model.EpidemicState;
 import org.json.JSONObject;

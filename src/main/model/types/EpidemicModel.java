@@ -1,4 +1,4 @@
-package main.model;
+package main.model.types;
 
 public enum EpidemicModel {
     SIRS,

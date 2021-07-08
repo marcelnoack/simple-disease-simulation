@@ -1,4 +1,4 @@
-package main.model;
+package main.model.types;
 
 public class Cell {
     private int x, y;

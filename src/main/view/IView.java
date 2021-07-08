@@ -1,7 +1,6 @@
 package main.view;
 
 import javafx.scene.Scene;
-import main.model.CellStatus;
 
 public interface IView {
     public Scene getScene();

@@ -1,4 +1,6 @@
-package main.model;
+package main.helper;
+
+import main.model.EpidemicState;
 
 import java.util.concurrent.ThreadLocalRandom;
 

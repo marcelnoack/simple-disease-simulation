@@ -1,4 +1,7 @@
-package main.model;
+package main.helper;
+
+import main.model.types.CalculationMode;
+import main.model.types.EpidemicModel;
 
 public class ModelFactory {
     public static IModelStrategy getModelStrategy(CalculationMode mode, EpidemicModel model) {

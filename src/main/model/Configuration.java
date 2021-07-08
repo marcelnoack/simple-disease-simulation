@@ -1,11 +1,13 @@
 package main.model;
 
-import org.json.JSONArray;
+import main.model.types.CalculationMode;
+import main.model.types.Cell;
+import main.model.types.CellStatus;
+import main.model.types.EpidemicModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Configuration {

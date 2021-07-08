@@ -1,5 +1,10 @@
 package main.model;
 
+import main.helper.IModelStrategy;
+import main.helper.ModelFactory;
+import main.model.types.Cell;
+import main.model.types.CellStatus;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EpidemicState {
@@ -42,12 +47,14 @@ public class EpidemicState {
         if (configuration.getInitialDistribution().size() > 0) {
             for (Cell c : configuration.getInitialDistribution()) {
                 byte statusValue = 0;
-                if(c.getStatus() == CellStatus.SUSCEPTIBLE) statusValue = 1;
-                if(c.getStatus() == CellStatus.INFECTED) statusValue = 2;
-                if(c.getStatus() == CellStatus.RECOVERED) statusValue = 3;
+                if (c.getStatus() == CellStatus.SUSCEPTIBLE) statusValue = 1;
+                if (c.getStatus() == CellStatus.INFECTED) statusValue = 2;
+                if (c.getStatus() == CellStatus.RECOVERED) statusValue = 3;
                 this.field[c.getY()][c.getX()] = statusValue;
-                if(c.getStatus() == CellStatus.INFECTED) rField[c.getY()][c.getX()] = configuration.getInfectionDuration();
-                if(c.getStatus() == CellStatus.RECOVERED) rField[c.getY()][c.getX()] = configuration.getImmunityDuration();
+                if (c.getStatus() == CellStatus.INFECTED)
+                    rField[c.getY()][c.getX()] = configuration.getInfectionDuration();
+                if (c.getStatus() == CellStatus.RECOVERED)
+                    rField[c.getY()][c.getX()] = configuration.getImmunityDuration();
             }
         } else {
             randPerm(configuration.getI(), (byte) 2);
@@ -60,8 +67,8 @@ public class EpidemicState {
             int x = ThreadLocalRandom.current().nextInt(configuration.getTotalWidth());
             int y = ThreadLocalRandom.current().nextInt(configuration.getTotalHeight());
             field[y][x] = cellStatus;
-            if(cellStatus == 2) rField[y][x] = configuration.getInfectionDuration();
-            if(cellStatus == 3) rField[y][x] = configuration.getImmunityDuration();
+            if (cellStatus == 2) rField[y][x] = configuration.getInfectionDuration();
+            if (cellStatus == 3) rField[y][x] = configuration.getImmunityDuration();
         }
     }
 
@@ -115,15 +122,13 @@ public class EpidemicState {
         this.R = 0;
         int x, y, xy;
 
-        for(xy = 0; xy < configuration.getTotalWidth() * configuration.getTotalHeight(); xy++) {
+        for (xy = 0; xy < configuration.getTotalWidth() * configuration.getTotalHeight(); xy++) {
             x = xy / configuration.getTotalWidth();
             y = xy % configuration.getTotalHeight();
             if (field[y][x] == 1) this.S++;
             if (field[y][x] == 2) this.I++;
             if (field[y][x] == 3) this.R++;
         }
-
-
     }
 
     private void incrementCurrentStep() {
@@ -134,9 +139,6 @@ public class EpidemicState {
         if (configuration.getMaxSteps() == 0 || (configuration.getMaxSteps() != 0 && currentStep <= configuration.getMaxSteps())) {
             IModelStrategy modelStrategy = ModelFactory.getModelStrategy(configuration.getMode(), Configuration.MODEL);
             modelStrategy.calcIteration(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField, configuration.getBeta(), configuration.getImmunityDuration(), configuration.getInfectionDuration());
-//            modelStrategy.calcStep(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField);
-//            modelStrategy.calcRecovery(configuration.getTotalWidth(), configuration.getTotalHeight(), field, rField, configuration.getImmunityDuration());
-//            modelStrategy.calcInfection(configuration.getTotalWidth(), configuration.getTotalHeight(), configuration.getBeta(), field, rField, configuration.getInfectionDuration());
             calcSIRCounts();
             incrementCurrentStep();
         }

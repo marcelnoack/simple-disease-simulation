@@ -1,9 +1,5 @@
-package main;
+package main.helper;
 
-import main.model.Cell;
-import main.model.CellStatus;
-import main.model.Configuration;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

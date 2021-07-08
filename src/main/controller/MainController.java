@@ -1,13 +1,7 @@
 package main.controller;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.util.Duration;
-import main.JsonLoader;
+import main.helper.JsonLoader;
 import main.model.Configuration;
 import main.model.EpidemicState;
 import main.view.IView;
@@ -15,7 +9,6 @@ import main.view.MainView;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;

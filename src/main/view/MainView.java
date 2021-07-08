@@ -13,7 +13,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import main.controller.IController;
-import main.model.CellStatus;
 import main.model.EpidemicState;
 
 import java.text.DecimalFormat;

@@ -3,4 +3,5 @@ module PVR.Krankheitsausbreitung {
     requires org.json;
 
     opens main;
+    opens main.helper;
 }
