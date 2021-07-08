@@ -1,9 +1,12 @@
 package main.model;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ParallelSIRS implements IModelStrategy {
     private static final int THREAD_COUNT = 8;
+    private Lock lock = new ReentrantLock();
 
     @Override
     public void calcIteration(int totalWidth, int totalHeight, byte[][] field, short[][] rField, double beta, short immunityDuration, short infectionDuration) {
@@ -35,13 +38,33 @@ public class ParallelSIRS implements IModelStrategy {
                         if (threadIndex == THREAD_COUNT - 1) { // allocate non-divisible rest to the last thread
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                    if (x > (divisibleWidth + 1) || x < (totalWidth - 1)) {
+                                        _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                    } else {
+                                        lock.lock();
+                                        try {
+                                            _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                        } finally {
+                                            lock.unlock();
+                                        }
+                                    }
                                 }
                             }
                         } else {
-                            for (int x = ((divisibleWidth / (THREAD_COUNT - 1)) * threadIndex); x < ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1)); x++) {
+                            int start = ((divisibleWidth / (THREAD_COUNT - 1)) * threadIndex);
+                            int end = ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1));
+                            for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                    if (x > (start + 1) || x < (end - 1)) {
+                                        _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                    } else {
+                                        lock.unlock();
+                                        try {
+                                            _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                        } finally {
+                                            lock.unlock();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -114,13 +137,33 @@ public class ParallelSIRS implements IModelStrategy {
                         if (threadIndex == THREAD_COUNT - 1) { // allocate non-divisible rest to the last thread
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                    if (x > (divisibleWidth + 1) || x < (totalWidth - 1)) {
+                                        _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                    } else {
+                                        lock.lock();
+                                        try {
+                                            _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                        } finally {
+                                            lock.unlock();
+                                        }
+                                    }
                                 }
                             }
                         } else {
-                            for (int x = ((divisibleWidth / (THREAD_COUNT - 1)) * threadIndex); x < ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1)); x++) {
+                            int start = ((divisibleWidth / (THREAD_COUNT - 1)) * threadIndex);
+                            int end = ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1));
+                            for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                    if (x > (start + 1) || x < (end - 1)) {
+                                        _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                    } else {
+                                        lock.lock();
+                                        try {
+                                            _calcRecoveryCell(field, rField, x, y, immunityDuration);
+                                        } finally {
+                                            lock.unlock();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -175,13 +218,33 @@ public class ParallelSIRS implements IModelStrategy {
                         if (threadIndex == THREAD_COUNT - 1) { // allocate non-divisible rest to the last thread
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                    if (x > (divisibleWidth + 1) || x < (totalWidth - 1)) {
+                                        _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                    } else {
+                                        lock.lock();
+                                        try {
+                                            _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                        } finally {
+                                            lock.unlock();
+                                        }
+                                    }
                                 }
                             }
                         } else {
-                            for (int x = ((divisibleWidth / (THREAD_COUNT - 1)) * threadIndex); x < ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1)); x++) {
+                            int start = ((divisibleWidth / (THREAD_COUNT - 1)) * threadIndex);
+                            int end = ((divisibleWidth / (THREAD_COUNT - 1)) * (threadIndex + 1));
+                            for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
-                                    _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);;
+                                    if (x > (start + 1) || x < (end - 1)) {
+                                        _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                    } else {
+                                        lock.lock();
+                                        try {
+                                            _calcInfectionCell(field, rField, x, y, totalWidth, totalHeight, beta, infectionDuration);
+                                        } finally {
+                                            lock.unlock();
+                                        }
+                                    }
                                 }
                             }
                         }
