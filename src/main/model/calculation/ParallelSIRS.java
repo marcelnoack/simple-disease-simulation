@@ -21,7 +21,6 @@ public class ParallelSIRS implements IModelStrategy {
     public void calcStep(int totalWidth, int totalHeight, byte[][] field, short[][] rField) {
         Thread[] threads = new Thread[THREAD_COUNT];
         int divisibleWidth = _calcDivisibleWidth(totalWidth - 1, THREAD_COUNT - 1);
-        System.out.println("Divisible: " + divisibleWidth + " " + totalWidth);
         for (int i = 0; i < THREAD_COUNT; i++) {
             int threadIndex = i;
             threads[i] = new Thread(new Runnable() {

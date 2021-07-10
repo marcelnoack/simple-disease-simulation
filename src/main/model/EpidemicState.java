@@ -10,8 +10,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EpidemicState {
     private int S, I, R;
     private int currentStep;
+    // byte data type to reduce the required memory allocation as much as possible
     // EMPTY = 0; SUSCEPTIBLE = 1; INFECTED = 2; RECOVERED = 3;
     private byte[][] field;
+    // short data type to be able to support immunity and infection durations above 128
+    // + while still being able to reduce the required memory allocation
     private short[][] rField;
     private Configuration configuration;
 

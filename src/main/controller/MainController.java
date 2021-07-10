@@ -9,6 +9,7 @@ import main.view.MainView;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -33,16 +34,18 @@ public class MainController implements IController {
 
     @Override
     public void toggleLoop() {
+        ArrayList<Long> calcTimesBackend = new ArrayList<>();
+        ArrayList<Long> calcTimesAll = new ArrayList<>();
         isRunning = !isRunning;
         if (isRunning) {
             Thread t = new Thread(new Runnable() {
                 @Override
                 public void run() {
-//                isRunning = true;
                     while (configuration.getMaxSteps() > 0 ? (model.getCurrentStep() < configuration.getMaxSteps() && isRunning) : isRunning) {
                         long t1 = System.currentTimeMillis();
                         model.handleIteration();
                         long t2 = System.currentTimeMillis();
+                        calcTimesBackend.add(t2 - t1);
                         FutureTask updateUI = new FutureTask(new Callable() {
                             @Override
                             public Object call() throws Exception {
@@ -55,15 +58,20 @@ public class MainController implements IController {
                         try {
                             updateUI.get();
                             long t3 = System.currentTimeMillis();
-                            System.out.println("-----------");
-                            System.out.println("Berechnung:" + (t2 - t1));
-                            System.out.println("FX: " + (t3 - t2));
-                            System.out.println("Gesamt: " + (t3 - t1));
-                            System.out.println("-----------");
+                            calcTimesAll.add(t3 - t1);
+//                            System.out.println("-----------");
+//                            System.out.println("Berechnung:" + (t2 - t1));
+//                            System.out.println("FX: " + (t3 - t2));
+//                            System.out.println("Gesamt: " + (t3 - t1));
+//                            System.out.println("-----------");
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
+                    System.out.println("Durchschnittliche Zeit pro Iteration Backend: " + calcTimesBackend.stream().mapToLong(l -> l).sum() / calcTimesBackend.size());
+                    System.out.println("Durchschnittliche Zeit pro Iteration Gesamt: " + calcTimesAll.stream().mapToLong(l -> l).sum() / calcTimesAll.size());
+                    System.out.println("Zeit Gesamt Backend: " + calcTimesBackend.stream().mapToLong(l -> l).sum());
+                    System.out.println("Zeit Gesamt Gesamt: " + calcTimesAll.stream().mapToLong(l -> l).sum());
                 }
             });
             t.setName("Backend Thread");
