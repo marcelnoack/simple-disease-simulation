@@ -8,7 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ParallelSIRS implements IModelStrategy {
     private static final int THREAD_COUNT = Runtime.getRuntime().availableProcessors();
-    private Lock lock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
 
     @Override
     public void calcIteration(int totalWidth, int totalHeight, byte[][] field, short[][] rField, double beta, short immunityDuration, short infectionDuration) {
@@ -26,7 +26,6 @@ public class ParallelSIRS implements IModelStrategy {
             threads[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int t = 0;
                     int x2 = 0;
                     int y2 = 0;
 
@@ -36,11 +35,11 @@ public class ParallelSIRS implements IModelStrategy {
                         for (int x = start; x < end; x++) {
                             for (int y = 0; y < totalHeight; y++) {
                                 if (x > (start + 1) && x < (end - 1)) {
-                                    _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                    _calcStepCell(field, rField, x, y, x2, y2, totalWidth, totalHeight);
                                 } else {
                                     lock.lock();
                                     try {
-                                        _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                        _calcStepCell(field, rField, x, y, x2, y2, totalWidth, totalHeight);
                                     } finally {
                                         lock.unlock();
                                     }
@@ -52,11 +51,11 @@ public class ParallelSIRS implements IModelStrategy {
                             for (int x = divisibleWidth; x < totalWidth; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
                                     if (x > (divisibleWidth + 1) && x < (totalWidth - 1)) {
-                                        _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                        _calcStepCell(field, rField, x, y, x2, y2, totalWidth, totalHeight);
                                     } else {
                                         lock.lock();
                                         try {
-                                            _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                            _calcStepCell(field, rField, x, y, x2, y2, totalWidth, totalHeight);
                                         } finally {
                                             lock.unlock();
                                         }
@@ -69,11 +68,11 @@ public class ParallelSIRS implements IModelStrategy {
                             for (int x = start; x < end; x++) {
                                 for (int y = 0; y < totalHeight; y++) {
                                     if (x > (start + 1) && x < (end - 1)) {
-                                        _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                        _calcStepCell(field, rField, x, y, x2, y2, totalWidth, totalHeight);
                                     } else {
                                         lock.lock();
                                         try {
-                                            _calcStepCell(field, rField, x, y, t, x2, y2, totalWidth, totalHeight);
+                                            _calcStepCell(field, rField, x, y, x2, y2, totalWidth, totalHeight);
                                         } finally {
                                             lock.unlock();
                                         }
@@ -97,7 +96,8 @@ public class ParallelSIRS implements IModelStrategy {
         }
     }
 
-    private void _calcStepCell(byte[][] field, short[][] rField, int x, int y, int t, int x2, int y2, int totalWidth, int totalHeight) {
+    private void _calcStepCell(byte[][] field, short[][] rField, int x, int y, int x2, int y2, int totalWidth, int totalHeight) {
+        int t;
         if (field[y][x] != 0) {
             t = ThreadLocalRandom.current().nextInt(8);
 
@@ -328,7 +328,7 @@ public class ParallelSIRS implements IModelStrategy {
                 getIll = true;
             }
 
-            if (getIll == true) {
+            if (getIll) {
                 field[y][x] = 2;
                 rField[y][x] = infectionDuration;
             }
